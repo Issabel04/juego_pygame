@@ -16,7 +16,7 @@ class Player(pygame.sprite.Sprite):
         
         self.pos = pygame.math.Vector2()
 
-        self.speed = 200
+        self.speed = 350
         
         #(x,y)
     
