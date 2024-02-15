@@ -7,10 +7,12 @@ class Player(pygame.sprite.Sprite):
         super().__init__(group)
 
         self.import_assets()
-
+        self.status = 'down_idle'
+        self.frame_index = 0
         # Se configuran las propiedades de nuestro personaje
-        self.image = pygame.Surface((32,64))
-        self.image.fill('black')
+        self.image = self.animations[self.status][self.frame_index]
+        #self.image = pygame.Surface((32,64))
+        #self.image.fill('black')
         
         self.rect = self.image.get_rect(center = pos)
         
@@ -25,16 +27,17 @@ class Player(pygame.sprite.Sprite):
     
     # Creamos un diccionario con todos los movimientos de nuestro personaje de la carpeta graphics
     def import_assets(self):
-         self.animations = {'up':[], 'down': [], 'left':[], 'right':[],
+        self.animations = {'up':[], 'down': [], 'left':[], 'right':[],
                        'up_idle': [], 'down_idle': [], 'left_idle':[], 'right_idle':[],
                        'up_axe': [], 'down_axe': [], 'left_axe':[], 'right_axe':[],
                        'up_hoe': [], 'down_hoe': [], 'left_hoe':[], 'right_hoe':[],
                        'up_water': [], 'down_water': [], 'left_water':[], 'right_water':[],
                       }
          
-         for animation in self.animations.keys():
-            ruta_completa = '../graphics/character/' + animation
+        for animation in self.animations.keys():
+            ruta_completa = './graphics/character/' + animation
             self.animations[animation] = import_folder(ruta_completa)
+        
 
     def input(self):
         
