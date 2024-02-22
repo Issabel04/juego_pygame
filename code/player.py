@@ -1,6 +1,7 @@
 import pygame
 from settings import *
 from support import *
+from timer import Timer
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos, group):
@@ -20,10 +21,25 @@ class Player(pygame.sprite.Sprite):
         self.direction = pygame.math.Vector2()
         
         self.pos = pygame.math.Vector2(self.rect.center)
-
         self.speed = 350
+
+        # Configuración temporizador
+        self.timers = {
+          'uso herramienta': Timer(400, self.usar_herramienta)
+        }
+
+        self.herramienta_seleccionada = 'axe'
+
+
+    def usar_herramienta(self):
+        print(self.herramienta_seleccionada)
+
+
+    def actualizar_timers(self):
+      for timer in self.timers.values():
+        timer.update()
         
-        #(x,y)
+       
     
     # Creamos un diccionario con todos los movimientos de nuestro personaje de la carpeta graphics
     def import_assets(self):
@@ -37,29 +53,59 @@ class Player(pygame.sprite.Sprite):
         for animation in self.animations.keys():
             ruta_completa = './graphics/character/' + animation
             self.animations[animation] = import_folder(ruta_completa)
-        
 
+    
+    def animate(self, dt):  
+      self.frame_index += 4 * dt   
+      if self.frame_index >= len(self.animations[self.status]):
+          self.frame_index = 0
+      self.image = self.animations[self.status][int(self.frame_index)]
+
+
+    
     def input(self):
         
         keys = pygame.key.get_pressed()    
       
+        # Movimiento vértical
         if keys [pygame.K_w]:
             self.direction.y = -1
+            self.status = 'up'
         
         elif keys[pygame.K_s]:
             self.direction.y = 1
+            self.status = 'down'
+
         
         else:
             self.direction.y = 0
         
+        # Movimiento horizontal
         if keys[pygame.K_a]:
             self.direction.x = -1
+            self.status = 'left'
+
         
         elif keys[pygame.K_d]:
             self.direction.x = 1
+            self.status = 'right'
+
 
         else:
             self.direction.x = 0
+
+        # Uso de la herramienta
+        if keys[pygame.K_f]:
+            self.timers['uso herramienta'].activate()
+
+
+        
+    
+    def get_status(self):
+     # Si mi personaje no se está desplazando 
+      if self.direction.magnitude() ==  0:
+        self.status = self.status.split('_')[0] + '_idle'
+      
 
     
     def move(self, dt):
@@ -78,4 +124,10 @@ class Player(pygame.sprite.Sprite):
     
     def update(self, dt):
         self.input()
+        self.get_status()
+        self.actualizar_timers()
         self.move(dt)
+        self.animate(dt)
+       
+        
+        
