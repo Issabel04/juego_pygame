@@ -9,10 +9,18 @@ class Timer:
       self.tiempo_inicio = 0
       self.activo = False
 
-    def active(self):  
+    def activate(self):  
       self.activo = True
       self.tiempo_inicio = pygame.time.get_ticks()
     
     def deactivate(self):
       self.activo = False
       self.tiempo_inicio = 0
+
+    def update(self):
+      tiempo_de_ejecucion = pygame.time.get_ticks()
+      
+      if tiempo_de_ejecucion - self.tiempo_inicio >= self.duracion:
+       self.deactivate()
+      if self.funcion:
+         self.funcion()
