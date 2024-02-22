@@ -23,10 +23,10 @@ class Game:
                 if evento.type == pygame.QUIT:
         # Le decimos que finalice        
                     pygame.quit()
-        # Cerramos la ventaja que nos genere        
+        # Cerramos la ventana que nos genere        
                     sys.exit()
 
-            dt = self.clock.tick() / 1000
+            dt = self.clock.tick() / 1250
             pygame.display.update()
 
             self.level.run(dt)

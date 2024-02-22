@@ -15,7 +15,7 @@ class Level():
     self.player = Player((250,250,), self.all_sprites)
 
   def run(self, dt):
-    self.display_surface.fill('purple')
+    self.display_surface.fill('black')
 # Se dibujan nuestros sprites en toda la superficie de la pantalla
     self.all_sprites.draw(self.display_surface)
 # Actualizamos esos sprites
