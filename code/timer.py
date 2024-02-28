@@ -21,6 +21,6 @@ class Timer:
       tiempo_de_ejecucion = pygame.time.get_ticks()
       
       if tiempo_de_ejecucion - self.tiempo_inicio >= self.duracion:
-       self.deactivate()
-      if self.funcion:
-         self.funcion()
+        self.deactivate()
+        if self.funcion:
+          self.funcion
