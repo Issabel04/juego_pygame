@@ -25,19 +25,34 @@ class Player(pygame.sprite.Sprite):
 
         # Configuración temporizador
         self.timers = {
-          'uso herramienta': Timer(400, self.usar_herramienta)
+          'uso herramienta': Timer(600, self.usar_herramienta),
+          'cambio herramienta': Timer(600),
+          'uso semilla': Timer(600, self.usar_semilla),
+          'cambio semilla': Timer(500)
         }
 
-        self.herramienta_seleccionada = 'axe'
+        # Variables para el uso de herramientas
+        self.herramientas = ['axe', 'hoe', 'water']
+        self.index_herramienta = 0
+        self.herramienta_seleccionada = self.herramientas[self.index_herramienta]
+        
+        for herramienta in range(len(self.herramientas)):
+            self.herramientas
 
+
+        # Variables para el uso de semillas
+        self.semillas = ['corn', 'tomato']
+        self.index_semillas = 0
+        self.semilla_seleccionada = self.semillas[self.index_semillas]
 
     def usar_herramienta(self):
         print(self.herramienta_seleccionada)
 
+    def usar_semilla(self):
+        pass
 
-    def actualizar_timers(self):
-      for timer in self.timers.values():
-        timer.update()
+
+    
         
        
     
@@ -66,46 +81,84 @@ class Player(pygame.sprite.Sprite):
     def input(self):
         
         keys = pygame.key.get_pressed()    
-      
+          
+        
+        if not self.timers['uso herramienta'].activo:         
+        
         # Movimiento vértical
-        if keys [pygame.K_w]:
-            self.direction.y = -1
-            self.status = 'up'
-        
-        elif keys[pygame.K_s]:
-            self.direction.y = 1
-            self.status = 'down'
+            if keys [pygame.K_w]:
+                self.direction.y = -1
+                self.status = 'up'
+            
+            elif keys[pygame.K_s]:
+                self.direction.y = 1
+                self.status = 'down'
 
-        
-        else:
-            self.direction.y = 0
-        
-        # Movimiento horizontal
-        if keys[pygame.K_a]:
-            self.direction.x = -1
-            self.status = 'left'
+            
+            else:
+                self.direction.y = 0
+            
+            # Movimiento horizontal
+            if keys[pygame.K_a]:
+                self.direction.x = -1
+                self.status = 'left'
 
-        
-        elif keys[pygame.K_d]:
-            self.direction.x = 1
-            self.status = 'right'
-
-
-        else:
-            self.direction.x = 0
-
-        # Uso de la herramienta
-        if keys[pygame.K_f]:
-            self.timers['uso herramienta'].activate()
+            
+            elif keys[pygame.K_d]:
+                self.direction.x = 1
+                self.status = 'right'
 
 
-        
+            else:
+                self.direction.x = 0
+
+            # Uso de la herramienta
+            #---------------------------------------------------
+            if keys[pygame.K_f]:
+                self.timers['uso herramienta'].activate()
+                self.direction = pygame.math.Vector2()
+                self.frame_index = 0
+            # Esta línea verifica si la tecla 'e' está siendo presionada y si el temporizador no está activo
+            if keys[pygame.K_e] and not self.timers['cambio herramienta'].activo:
+                self.timers['cambio herramienta'].activate() #se activa el temporizador si la condición anterior se cumple
+                self.index_herramienta = (self.index_herramienta + 1) % len(self.herramientas) #asegura que el índice permanezca dentro de los límites
+                self.herramienta_seleccionada = self.herramientas[self.index_herramienta] #se selecciona la herramienta correspondiente en la lista
+
+            # Uso de las semillas
+            #------------------------------------------------
+
+            if keys[pygame.K_h]:
+             self.timers['uso semilla'].activate()
+             self.direction =pygame.math.Vector2()
+             self.frame_index = 0
+             print(f'Se plantó una semilla de: {self.semilla_seleccionada}')
+
+            if keys[pygame.K_1] and not self.timers['cambio semilla'].activo:
+             self.timers['cambio semilla'].activate() 
+             self.index_semillas = 0
+             self.semilla_seleccionada = self.semillas[self.index_semillas]
+             print('se cambió a maíz')
+            
+            if keys[pygame.K_2] and not self.timers['cambio semilla'].activo:
+             self.timers['cambio semilla'].activate() 
+             self.index_semillas = 1
+             self.semilla_seleccionada = self.semillas[self.index_semillas]
+             print('se cambió a tomate')
+
+
+    def actualizar_timers(self):
+      for timer in self.timers.values():
+        timer.update()    
     
     def get_status(self):
      # Si mi personaje no se está desplazando 
       if self.direction.magnitude() ==  0:
         self.status = self.status.split('_')[0] + '_idle'
       
+      
+      if self.timers['uso herramienta'].activo:
+        self.status = self.status.split('_')[0] + '_' + self.herramienta_seleccionada
+        
 
     
     def move(self, dt):
