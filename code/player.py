@@ -16,6 +16,8 @@ class Player(pygame.sprite.Sprite):
         #self.image.fill('black')
         
         self.rect = self.image.get_rect(center = pos)
+        # Altura en la cual se encuentra mi personaje
+        self.z = LAYER['main']
         
         #Configuración para el movimiento
         self.direction = pygame.math.Vector2()
@@ -137,14 +139,13 @@ class Player(pygame.sprite.Sprite):
              self.timers['cambio semilla'].activate() 
              self.index_semillas = 0
              self.semilla_seleccionada = self.semillas[self.index_semillas]
-             print('se cambió a maíz')
+             
             
             if keys[pygame.K_2] and not self.timers['cambio semilla'].activo:
              self.timers['cambio semilla'].activate() 
              self.index_semillas = 1
              self.semilla_seleccionada = self.semillas[self.index_semillas]
-             print('se cambió a tomate')
-
+            
 
     def actualizar_timers(self):
       for timer in self.timers.values():
