@@ -2,3 +2,9 @@ VENTANA_LARGO = 700
 VENTANA_ANCHO = 700
 
 NOMBRE_VIDEOJUEGO = 'Farlands'
+
+POSICION_OVERLAY = {
+    'herramienta': (40, VENTANA_LARGO - 15),
+    'semilla': (70, VENTANA_LARGO - 5)
+
+}
