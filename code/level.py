@@ -1,9 +1,16 @@
 import pygame
 from player import Player
 from overlay import Overlay
+
+from generic import Tree
 from generic import Generic
+from generic import Water 
+from generic import WildFlower
+
+from support import import_folder
 from settings import *
 from pytmx.util_pygame import load_pygame
+
 
 class Level():
   def __init__(self):
@@ -29,15 +36,39 @@ class Level():
     # Recorremos todo el archivo map_tmx y obtenemos el layer que buscamos  
       for x, y, surf in tmx_data.get_layer_by_name(layer).tiles():
         # Por cada elemento dentro del layer, creamos un objeto de tipo Generic
-  
-        # Los datos que tendrá este objeto vendrán directamente del ciclo for
+    # Los datos que tendrá este objeto vendrán directamente del ciclo for
         Generic(pos=(x * TILE_SIZE, y * TILE_SIZE), surf=surf, groups = self.all_sprites, z= LAYER['house bottom'])
+      
+    # Importamos los gráficos de la casa superior
+      for layer in ['HouseWalls', 'HouseFurnitureTop']:   
+        for x, y, surf in tmx_data.get_layer_by_name(layer).tiles():
+          Generic(pos=(x * TILE_SIZE, y * TILE_SIZE), surf=surf, groups = self.all_sprites, z= LAYER['house top'])
+      
+    # Importamos los gráficos de la barda
+      for x,y, surf in tmx_data.get_layer_by_name('Fence').tiles():
+        Generic(pos=(x * TILE_SIZE, y * TILE_SIZE), surf=surf, groups = self.all_sprites)
+
+    # Importamos los gráficos del agua
+      water_frames = import_folder('./graphics/water')
+      for x, y, surf in tmx_data.get_layer_by_name('Water'):
+        Water(pos=(x * TILE_SIZE, y * TILE_SIZE), frames=water_frames, groups = self.all_sprites, z= LAYER['water'])
+    
+    # Importamos los gráficos de las plantas
+      for obj in tmx_data.get_layer_by_name('Decoration'):
+        WildFlower(pos=(obj.x, obj.y), surf=obj.image, groups = self.all_sprites, z= LAYER['main'])
+    
+    # Importamos los gráficos de los árboles
+      for obj in tmx_data.get_layer_by_name('Trees'):
+        Tree(pos=(obj.x, obj.y), surf=obj.image, groups = self.all_sprites, z= LAYER['main'], name=obj.name)
+
+
 
     self.player = Player((250,250,), self.all_sprites)
    
     terreno = pygame.image.load('./graphics/world/ground.png').convert_alpha()
     
     Generic(pos=(0,0), surf = terreno, groups = self.all_sprites, z=LAYER['ground'])
+    
     
 
   def run(self, dt):
