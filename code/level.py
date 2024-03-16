@@ -20,6 +20,8 @@ class Level():
 
 # Creamos un grupo con todos los sprites del nivel    
     self.all_sprites = CameraGroup()
+
+    self.collision_sprites = pygame.sprite.Group()
     
     # Configuramos el jugador
     self.setup()
@@ -42,28 +44,28 @@ class Level():
     # Importamos los gráficos de la casa superior
       for layer in ['HouseWalls', 'HouseFurnitureTop']:   
         for x, y, surf in tmx_data.get_layer_by_name(layer).tiles():
-          Generic(pos=(x * TILE_SIZE, y * TILE_SIZE), surf=surf, groups = self.all_sprites, z= LAYER['house top'])
+          Generic(pos=(x * TILE_SIZE, y * TILE_SIZE), surf=surf, groups = [self.all_sprites, self.collision_sprites], z= LAYER['house top'])
       
     # Importamos los gráficos de la barda
       for x,y, surf in tmx_data.get_layer_by_name('Fence').tiles():
-        Generic(pos=(x * TILE_SIZE, y * TILE_SIZE), surf=surf, groups = self.all_sprites)
+        Generic(pos=(x * TILE_SIZE, y * TILE_SIZE), surf=surf, groups = [self.all_sprites, self.collision_sprites])
 
     # Importamos los gráficos del agua
       water_frames = import_folder('./graphics/water')
       for x, y, surf in tmx_data.get_layer_by_name('Water'):
-        Water(pos=(x * TILE_SIZE, y * TILE_SIZE), frames=water_frames, groups = self.all_sprites, z= LAYER['water'])
+        Water(pos=(x * TILE_SIZE, y * TILE_SIZE), frames=water_frames, groups = [self.all_sprites, self.collision_sprites], z= LAYER['water'])
     
     # Importamos los gráficos de las plantas
       for obj in tmx_data.get_layer_by_name('Decoration'):
-        WildFlower(pos=(obj.x, obj.y), surf=obj.image, groups = self.all_sprites, z= LAYER['main'])
+        WildFlower(pos=(obj.x, obj.y), surf=obj.image, groups = [self.all_sprites, self.collision_sprites], z= LAYER['main'])
     
     # Importamos los gráficos de los árboles
       for obj in tmx_data.get_layer_by_name('Trees'):
-        Tree(pos=(obj.x, obj.y), surf=obj.image, groups = self.all_sprites, z= LAYER['main'], name=obj.name)
+        Tree(pos=(obj.x, obj.y), surf=obj.image, groups = [self.all_sprites, self.collision_sprites], z= LAYER['main'], name=obj.name)
 
 
-
-    self.player = Player((250,250,), self.all_sprites)
+    # Creamos nuestro personaje
+    self.player = Player((840,560), self.all_sprites, self.collision_sprites)
    
     terreno = pygame.image.load('./graphics/world/ground.png').convert_alpha()
     
