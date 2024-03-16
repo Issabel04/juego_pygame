@@ -4,7 +4,7 @@ from support import *
 from timer import Timer
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, group):
+    def __init__(self, pos, group, collision_sprites):
         super().__init__(group)
 
         self.import_assets()
@@ -14,10 +14,14 @@ class Player(pygame.sprite.Sprite):
         self.image = self.animations[self.status][self.frame_index]
         #self.image = pygame.Surface((32,64))
         #self.image.fill('black')
-        
         self.rect = self.image.get_rect(center = pos)
         # Altura en la cual se encuentra mi personaje
         self.z = LAYER['main']
+        # Le agregamos un hitbox
+        self.hitbox = self.rect.copy().inflate((-126, -70))
+        
+        self.collision_sprites = collision_sprites
+
         
         #Configuración para el movimiento
         self.direction = pygame.math.Vector2()
@@ -151,6 +155,39 @@ class Player(pygame.sprite.Sprite):
       for timer in self.timers.values():
         timer.update()    
     
+    def collisions(self, direction):
+       for sprite in self.collision_sprites.sprites():
+        # Detecta si el objeto del sprite tiene un atributo "hitbox"
+          if hasattr(sprite, 'hitbox'):
+            # Detecta si el sprite tiene una colision
+             if sprite.hitbox.colliderect(self.hitbox):
+                
+                # Verifica los choques entre el eje horizontal
+                if direction == 'horizontal':
+                    if self.direction.x > 0: # Significa que el usuario se está moviendo hacia la derecha:
+                        self.hitbox.right = sprite.hitbox.left
+                   
+                    elif self.direction.x < 0: # Significa que el usuario se está moviendo hacia la izquierda:
+                      self.hitbox.left = sprite.hitbox.right
+                
+                    self.rect.centerx = self.hitbox.centerx
+                    self.pos.x = self.hitbox.centerx
+           
+           # Verifica los choques en el eje vértical 
+                if direction =='vertical':
+                    if self.direction.y > 0: # Significa que el usuario se está moviendo hacia la abajo:
+                        self.hitbox.bottom = sprite.hitbox.top
+                   
+                    elif self.direction.y < 0: # Significa que el usuario se está moviendo hacia arriba:
+                      self.hitbox.top = sprite.hitbox.bottom
+                
+                    self.rect.centery = self.hitbox.centery
+                    self.pos.y = self.hitbox.centery
+   
+   
+   
+   
+   
     def get_status(self):
      # Si mi personaje no se está desplazando 
       if self.direction.magnitude() ==  0:
@@ -171,10 +208,17 @@ class Player(pygame.sprite.Sprite):
 
        # Movimiento horizontal 
         self.pos.x += self.direction.x * self.speed * dt    
-        self.rect.centerx = self.pos.x
+        self.rect.centerx = round(self.pos.x)
+        self.rect.centerx = self.hitbox.centerx
+        self.collisions('horizontal')
+        
+        
+        
         # Movimiento vértical
         self.pos.y += self.direction.y * self.speed * dt    
-        self.rect.centery = self.pos.y
+        self.rect.centery = round(self.pos.y)
+        self.rect.centery = self.hitbox.centery
+        self.collisions('vertical')
     
     def update(self, dt):
         self.input()
