@@ -44,16 +44,16 @@ class Level():
     # Importamos los gráficos de la casa superior
       for layer in ['HouseWalls', 'HouseFurnitureTop']:   
         for x, y, surf in tmx_data.get_layer_by_name(layer).tiles():
-          Generic(pos=(x * TILE_SIZE, y * TILE_SIZE), surf=surf, groups = [self.all_sprites, self.collision_sprites], z= LAYER['house top'])
+          Generic(pos=(x * TILE_SIZE, y * TILE_SIZE), surf=surf, groups = [self.all_sprites], z= LAYER['house top'])
       
     # Importamos los gráficos de la barda
       for x,y, surf in tmx_data.get_layer_by_name('Fence').tiles():
-        Generic(pos=(x * TILE_SIZE, y * TILE_SIZE), surf=surf, groups = [self.all_sprites, self.collision_sprites])
+        Generic(pos=(x * TILE_SIZE, y * TILE_SIZE), surf=surf, groups = [self.all_sprites])
 
     # Importamos los gráficos del agua
       water_frames = import_folder('./graphics/water')
       for x, y, surf in tmx_data.get_layer_by_name('Water'):
-        Water(pos=(x * TILE_SIZE, y * TILE_SIZE), frames=water_frames, groups = [self.all_sprites, self.collision_sprites], z= LAYER['water'])
+        Water(pos=(x * TILE_SIZE, y * TILE_SIZE), frames=water_frames, groups = [self.all_sprites], z= LAYER['water'])
     
     # Importamos los gráficos de las plantas
       for obj in tmx_data.get_layer_by_name('Decoration'):
@@ -63,9 +63,15 @@ class Level():
       for obj in tmx_data.get_layer_by_name('Trees'):
         Tree(pos=(obj.x, obj.y), surf=obj.image, groups = [self.all_sprites, self.collision_sprites], z= LAYER['main'], name=obj.name)
 
+    # Colisiones invisibles
+    for x ,y, surf in tmx_data.get_layer_by_name('Collision').tiles():
+      Generic(pos=(x * TILE_SIZE, y * TILE_SIZE), surf=pygame.Surface((TILE_SIZE, TILE_SIZE)), groups = [self.collision_sprites])
 
-    # Creamos nuestro personaje
-    self.player = Player((840,560), self.all_sprites, self.collision_sprites)
+    for obj in tmx_data.get_layer_by_name('Player'):
+      if obj.name == 'Start' : 
+
+     # Creamos nuestro personaje
+       self.player = Player((obj.x, obj.y), self.all_sprites, self.collision_sprites)
    
     terreno = pygame.image.load('./graphics/world/ground.png').convert_alpha()
     
@@ -95,7 +101,7 @@ class CameraGroup(pygame.sprite.Group):
     self.offset.x = player.rect.centerx - VENTANA_LARGO / 2
     self.offset.y = player.rect.centery - VENTANA_ANCHO / 2
     for layer in LAYER.values():
-      for sprite in self.sprites():
+      for sprite in sorted(self.sprites(), key=lambda sprite: sprite.rect.centery):
        if sprite.z == layer:
          offset_rect = sprite.rect.copy()
          offset_rect.center -= self.offset

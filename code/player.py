@@ -18,7 +18,7 @@ class Player(pygame.sprite.Sprite):
         # Altura en la cual se encuentra mi personaje
         self.z = LAYER['main']
         # Le agregamos un hitbox
-        self.hitbox = self.rect.copy().inflate((-126, -70))
+        self.hitbox = self.rect.copy().inflate((-150, -55))
         
         self.collision_sprites = collision_sprites
 
@@ -208,7 +208,7 @@ class Player(pygame.sprite.Sprite):
 
        # Movimiento horizontal 
         self.pos.x += self.direction.x * self.speed * dt    
-        self.rect.centerx = round(self.pos.x)
+        self.hitbox.centerx = round(self.pos.x)
         self.rect.centerx = self.hitbox.centerx
         self.collisions('horizontal')
         
@@ -216,7 +216,7 @@ class Player(pygame.sprite.Sprite):
         
         # Movimiento vértical
         self.pos.y += self.direction.y * self.speed * dt    
-        self.rect.centery = round(self.pos.y)
+        self.hitbox.centery = round(self.pos.y)
         self.rect.centery = self.hitbox.centery
         self.collisions('vertical')
     
