@@ -1,6 +1,8 @@
 import pygame
 from settings import *
 from random import randint
+from timer import Timer
+from random import choice, randint
 
 
 class Generic(pygame.sprite.Sprite):
@@ -39,6 +41,16 @@ class Tree(Generic):
       super().__init__(pos=pos, surf=surf, groups=groups, z=z,)
 
       # Las manzanas del árbol
+      self.health = 5
+      self.alive = True
+
+      # Creamos el atributo para tener la imagen del árbol talado
+      ruta_talado = f'./graphics/stumps/{"small" if name == "Small" else "large"}.png'
+      self.superficie_talado = pygame.image.load(ruta_talado).convert_alpha()
+      self.invul_time = Timer(200)
+
+
+      # Creamos los métodos para poner manzanas en los árboles
       self.apple_surf = pygame.image.load('./graphics/fruit/apple.png')
       self.apple_pos = APPLE_POS[name]
       self.apple_sprites = pygame.sprite.Group()
@@ -55,6 +67,14 @@ class Tree(Generic):
            groups = [self.apple_sprites, self.groups()[0]],
            z= LAYER['fruit']
            )
+
+  def damage(self):
+     self.health =- 1
+     print('Se le hizo daño al árbol')
+
+     if len(self.apple_sprites.sprites()) > 0:
+        random_apple = choice(self.apple_sprites.sprites())
+        random_apple.kill()
 
 
          

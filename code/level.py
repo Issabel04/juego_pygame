@@ -20,9 +20,9 @@ class Level():
 
 # Creamos un grupo con todos los sprites del nivel    
     self.all_sprites = CameraGroup()
-
     self.collision_sprites = pygame.sprite.Group()
-    
+    self.tree_sprites = pygame.sprite.Group()
+
     # Configuramos el jugador
     self.setup()
     
@@ -61,7 +61,7 @@ class Level():
     
     # Importamos los gráficos de los árboles
       for obj in tmx_data.get_layer_by_name('Trees'):
-        Tree(pos=(obj.x, obj.y), surf=obj.image, groups = [self.all_sprites, self.collision_sprites], z= LAYER['main'], name=obj.name)
+        Tree(pos=(obj.x, obj.y), surf=obj.image, groups = [self.all_sprites, self.collision_sprites, self.tree_sprites], z= LAYER['main'], name=obj.name)
 
     # Colisiones invisibles
     for x ,y, surf in tmx_data.get_layer_by_name('Collision').tiles():
@@ -71,7 +71,12 @@ class Level():
       if obj.name == 'Start' : 
 
      # Creamos nuestro personaje
-       self.player = Player((obj.x, obj.y), self.all_sprites, self.collision_sprites)
+       self.player = Player(
+       pos=(obj.x, obj.y),
+       group = self.all_sprites,
+       collision_sprites=  self.collision_sprites,
+       tree_sprites = self.tree_sprites
+       )
    
     terreno = pygame.image.load('./graphics/world/ground.png').convert_alpha()
     
@@ -107,3 +112,16 @@ class CameraGroup(pygame.sprite.Group):
          offset_rect.center -= self.offset
       
          self.display_surface.blit(sprite.image, offset_rect)
+
+         if sprite == player:
+         
+          keys = pygame.key.get_pressed()   
+          
+          pygame.draw.rect(self.display_surface, 'purple', offset_rect, 5)
+          
+          hitbox_rect = player.hitbox.copy()
+          hitbox_rect.center = offset_rect.center
+          pygame.draw.rect(self.display_surface, 'black', hitbox_rect, 5)
+          
+          target_pos = offset_rect.center + OFFSET_HERRAMIENTAS[player.status.split('_')[0]]
+          pygame.draw.circle(self.display_surface, 'brown',target_pos, 5)
