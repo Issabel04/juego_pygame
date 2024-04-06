@@ -4,10 +4,11 @@ from support import *
 from timer import Timer
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, group, collision_sprites):
+    def __init__(self, pos, group, collision_sprites, tree_sprites):
         super().__init__(group)
 
         self.import_assets()
+        
         self.status = 'down_idle'
         self.frame_index = 0
         # Se configuran las propiedades de nuestro personaje
@@ -51,18 +52,29 @@ class Player(pygame.sprite.Sprite):
         self.index_semillas = 0
         self.semilla_seleccionada = self.semillas[self.index_semillas]
 
+        # Agregamos interacción con los árboles
+        self.tree_sprites = tree_sprites
+
+
     def usar_herramienta(self):
-        print(self.herramienta_seleccionada)
+        if self.herramienta_seleccionada == 'hoe':
+           pass
+        elif self.herramienta_seleccionada == 'water':
+           pass
+        elif self.herramienta_seleccionada == 'axe':
+            for arbol in self.tree_sprites.sprites():
+               if arbol.rect.collidepoint(self.target_pos):
+                  arbol.damage()
+
+    def get_target_pos(self):
+        self.target_pos = self.rect.center + OFFSET_HERRAMIENTAS[self.status.split('_')[0]]
+
+
 
     def usar_semilla(self):
         pass
 
-
-    
-        
-       
-    
-    # Creamos un diccionario con todos los movimientos de nuestro personaje de la carpeta graphics
+# Creamos un diccionario con todos los movimientos de nuestro personaje de la carpeta graphics
     def import_assets(self):
         self.animations = {'up':[], 'down': [], 'left':[], 'right':[],
                        'up_idle': [], 'down_idle': [], 'left_idle':[], 'right_idle':[],
@@ -223,6 +235,7 @@ class Player(pygame.sprite.Sprite):
     def update(self, dt):
         self.input()
         self.get_status()
+        self.get_target_pos()
         self.actualizar_timers()
         self.move(dt)
         self.animate(dt)
